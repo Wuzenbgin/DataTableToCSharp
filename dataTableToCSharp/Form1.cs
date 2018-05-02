@@ -85,14 +85,14 @@ namespace dataTableToCSharp
         private List<tableContent> GetTableContentObjects(string tableName)
         {
             string connstr = "data source=192.168.1.1/orcl;User Id=abc;Password=abc;";
-            string sql = @"select t1.column_name,data_type,data_default,nullable,comments from (
-                            select table_name, column_name, data_type, data_default, nullable from user_tab_cols where Table_Name = 'T_POL_CUSTOMER_NEW'
+            string sql = @"select t1.column_name,data_type,nullable,comments from (
+                            select table_name, column_name, data_type, data_default, nullable from user_tab_cols where Table_Name = '{0}'
                                 )t1
                             RIGHT JOIN
                             (   
                                 select column_name, comments from user_col_comments where Table_Name = '{0}'
                             )t2
-                            on t1.column_name = t2.column_name; ";
+                            on t1.column_name = t2.column_name ";
             sql = string.Format(sql, tableName);
             using (OracleConnection conn = new OracleConnection(connstr))
             {
@@ -109,7 +109,8 @@ namespace dataTableToCSharp
 
                         obj.ColumnName = reader.GetString(0);
                         obj.DataType = reader.GetString(1);
-                        obj.IsNullable = reader.GetBoolean(2);
+                        //obj.IsNullable = reader.GetBoolean(2);
+                        if(!string.IsNullOrEmpty(reader[3].tostring()))
                         obj.Comment = reader.GetString(3);
 
                         list.Add(obj);
