@@ -52,7 +52,7 @@ namespace dataTableToCSharp
             {
                 
                 string datatype = Function.GetDataTypeFromOracleType(obj.DataType);
-                sbClass.Append(string.Format("\tprivate {1} {0};\n\n", obj.ColumnName, datatype));
+                sbClass.Append(string.Format("\tprivate {1} {0};\n", obj.ColumnName.ToLower(), datatype));
                 //添加注释
                 sbClass.Append("\t/// <summary>\n");
                 sbClass.Append(string.Format("\t/// {0}\n", obj.Comment));
@@ -60,10 +60,18 @@ namespace dataTableToCSharp
 
 
                 //sbClass.Append(string.Format("public {2} {1} { get => {0}; set => {0} = value; }\n\n", obj.ColumnName, Function.GetFirstUpperCharacter(obj.ColumnName), datatype));
-                sbClass.Append(string.Format("\tpublic {0} {1}\n", datatype, Function.GetFirstUpperCharacter(obj.ColumnName)));
+                sbClass.Append(string.Format("\tpublic {0} {1}\n", datatype, Function.GetFirstUpperCharacter(obj.ColumnName.ToLower())));
                 sbClass.Append("\t{\n");
-                sbClass.Append(string.Format("\t\tget => {0}; set => {0} = value;\n", obj.ColumnName));
+                //sbClass.Append(string.Format("\t\tget => {0}; set => {0} = value;\n", obj.ColumnName));
+                sbClass.Append(string.Format("\t\tget));
+                sbClass.Append("{");
+                sbClass.Append(string.Format("\treturn {0};", obj.ColumnName.ToLower()));
                 sbClass.Append("\t}\n");
+                sbClass.Append(string.Format("\t\tset));
+                sbClass.Append("{");
+                sbClass.Append(string.Format("\t{0} = value;", obj.ColumnName.ToLower()));
+                sbClass.Append("\t}\n");
+                sbClass.Append("\t}\n\n");
 
                 this.prgData.Invoke((Action)(() => prgData.Value = count * 100 / listtableContent.Count));
                 count++;
